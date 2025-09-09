@@ -26,8 +26,8 @@ use sctk::subcompositor::SubcompositorState;
 use crate::platform_impl::wayland::event_loop::sink::EventSink;
 use crate::platform_impl::wayland::output::MonitorHandle;
 use crate::platform_impl::wayland::seat::{
-    PointerConstraintsState, RelativePointerState, TextInputState, WinitPointerData,
-    WinitPointerDataExt, WinitSeatState,
+    PointerConstraintsState, PointerGesturesState, RelativePointerState, TextInputState,
+    WinitPointerData, WinitPointerDataExt, WinitSeatState,
 };
 use crate::platform_impl::wayland::types::kwin_blur::KWinBlurManager;
 use crate::platform_impl::wayland::types::wp_fractional_scaling::FractionalScalingManager;
@@ -96,6 +96,9 @@ pub struct WinitState {
 
     /// Relative pointer.
     pub relative_pointer: Option<RelativePointerState>,
+
+    /// Pointer gestures to handle pinch, rotate, and pan
+    pub pointer_gestures: Option<PointerGesturesState>,
 
     /// Pointer constraints to handle pointer locking and confining.
     pub pointer_constraints: Option<Arc<PointerConstraintsState>>,
@@ -186,6 +189,7 @@ impl WinitState {
                 .map(Arc::new)
                 .ok(),
             pointer_surfaces: Default::default(),
+            pointer_gestures: PointerGesturesState::new(globals, queue_handle).ok(),
 
             monitors: Arc::new(Mutex::new(monitors)),
             events_sink: EventSink::new(),
